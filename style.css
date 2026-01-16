@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  /* ⭐⭐⭐ 關鍵：一定要有 height */
+  .map-container {
+    position: relative;
+    width: 600px;
+    height: 400px;          /* ← 新加：Google Maps 必須 */
+    margin: 20px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  
+  /* 舊版留低都冇問題（for image map） */
+  .map-container img {
+    width: 100%;
+  }
+  
+  /* 以下點樣式暫時用唔到，但保留冇害 */
+  .point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  
+  .pickup {
+    background: blue;
+  }
+  
+  .dropoff {
+    background: red;
+  }
+  
+  .selected {
+    outline: 3px solid yellow;
+    opacity: 1;
+  }
+  
+  .info-box {
+    width: 600px;
+    margin: 15px auto;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-size: 14px;
+  }
+  
+  select,
+  button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  
+  .disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }

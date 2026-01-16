@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Minibus – Nathan Road Demo</title>
+
+  <!-- 外置 CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>🚌 Smart Minibus – 彌敦道（明日返工）</h1>
+
+<p style="text-align:center;">
+  選擇上車點、落車點及出發時間
+</p>
+
+<!-- Google Map -->
+<div id="map" class="map-container"></div>
+
+<div class="info-box">
+  <div><strong>日期：</strong> 明日</div>
+
+  <div>
+    <strong>出發時間：</strong>
+    <select id="timeSelect" onchange="updateSeats()">
+      <option value="">請選擇</option>
+      <option value="08:30">08:30</option>
+      <option value="08:45">08:45</option>
+      <option value="09:00">09:00</option>
+    </select>
+  </div>
+
+  <div><strong>已選上車點：</strong> <span id="pickupText">未選擇</span></div>
+  <div><strong>已選落車點：</strong> <span id="dropoffText">未選擇</span></div>
+  <div><strong>剩餘座位：</strong> <span id="seatText">—</span></div>
+
+  <button id="bookBtn" class="disabled" onclick="bookSeat()">預訂座位</button>
+  <div id="status" style="margin-top:8px;"></div>
+
+  <div style="margin-top:10px;">
+    <strong>建議停靠順序：</strong>
+    <span id="routePlan">—</span>
+  </div>
+</div>
+
+<script>
+/* ========================
+   系統狀態
+======================== */
+let passengers = [];
+let selectedPickup = null;
+let selectedDropoff = null;
+let selectedTime = "";
+
+const stopOrder = {
+  "佐敦": 1,
+  "柯士甸": 2,
+  "尖沙咀": 3,
+  "K11": 4
+};
+
+let routes = {
+  "08:30": 20,
+  "08:45": 20,
+  "09:00": 20
+};
+
+let map;
+let pickupMarker = null;
+let dropoffMarker = null;
+
+/* ========================
+   Google Map 初始化
+======================== */
+function initMap() {
+  const nathanRoad = { lat: 22.3049, lng: 114.1717 };
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 15,
+    center: nathanRoad,
+  });
+
+  // 上車點
+  createMarker({ lat: 22.3049, lng: 114.1717 }, "pickup", "佐敦");
+  createMarker({ lat: 22.3025, lng: 114.1722 }, "pickup", "柯士甸");
+
+  // 落車點
+  createMarker({ lat: 22.2998, lng: 114.1728 }, "dropoff", "尖沙咀");
+  createMarker({ lat: 22.2965, lng: 114.1729 }, "dropoff", "K11");
+}
+
+function createMarker(position, type, name) {
+  const marker = new google.maps.Marker({
+    position,
+    map,
+    label: type === "pickup" ? "P" : "D",
+  });
+
+  marker.addListener("click", () => {
+    if (type === "pickup") {
+      selectPickup(marker, name);
+    } else {
+      selectDropoff(marker, name);
+    }
+  });
+}
+
+/* ========================
+   選擇邏輯
+======================== */
+function selectPickup(marker, name) {
+  selectedPickup = marker;
+  document.getElementById("pickupText").innerText = name;
+  updateButton();
+}
+
+function selectDropoff(marker, name) {
+  selectedDropoff = marker;
+  document.getElementById("dropoffText").innerText = name;
+  updateButton();
+}
+
+function updateSeats() {
+  selectedTime = document.getElementById("timeSelect").value;
+  document.getElementById("seatText").innerText =
+    selectedTime ? routes[selectedTime] : "—";
+  updateButton();
+}
+
+function updateButton() {
+  const btn = document.getElementById("bookBtn");
+  if (selectedPickup && selectedDropoff && selectedTime && routes[selectedTime] > 0) {
+    btn.classList.remove("disabled");
+  } else {
+    btn.classList.add("disabled");
+  }
+}
+
+/* ========================
+   預訂 & 路線
+======================== */
+function bookSeat() {
+  if (!selectedTime || routes[selectedTime] <= 0) return;
+
+  routes[selectedTime]--;
+
+  passengers.push({
+    pickup: document.getElementById("pickupText").innerText,
+    dropoff: document.getElementById("dropoffText").innerText
+  });
+
+  document.getElementById("seatText").innerText = routes[selectedTime];
+  document.getElementById("status").innerText =
+    "✅ 成功預訂 " + selectedTime + " 班次";
+
+  updateRoutePlan();
+  updateButton();
+}
+
+function updateRoutePlan() {
+  let stops = [];
+
+  passengers.forEach(p => {
+    if (!stops.includes(p.pickup)) stops.push(p.pickup);
+    if (!stops.includes(p.dropoff)) stops.push(p.dropoff);
+  });
+
+  stops.sort((a, b) => stopOrder[a] - stopOrder[b]);
+  document.getElementById("routePlan").innerText = stops.join(" → ");
+}
+</script>
+
+<!-- Google Maps API（一定要最後） -->
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+  async
+  defer>
+</script>
+
+</body>
+</html>
