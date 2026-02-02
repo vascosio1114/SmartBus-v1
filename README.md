@@ -8,6 +8,23 @@ This repository contains the **MVP (v0.3)** implementation: a **Single Page Appl
 
 ---
 
+## 🌐 Live Demo
+
+A live, interactive demo of the Smart Minibus MVP is available here:
+
+👉 **https://vascosio1114.github.io/SmartBus-v1/**
+
+This demo runs entirely in the browser and simulates a demand-responsive transport system along the Nathan Road corridor in Hong Kong.
+
+### How to Explore the Demo
+
+- Select pickup and drop-off points directly on the map
+- Observe how the system dynamically determines whether to **STOP** or **SKIP** each virtual stop
+- Switch between Passenger, Driver, and System perspectives (if enabled)
+- Watch real-time routing decisions update as new requests enter the system
+
+No backend or login is required — the simulation is fully client-side.
+
 ## 🎯 Problem
 
 Public transport in dense urban areas often faces structural inefficiencies:
